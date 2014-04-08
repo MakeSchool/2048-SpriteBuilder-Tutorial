@@ -7,7 +7,12 @@
 //
 
 #import "MainScene.h"
+#import "Grid.h"
 
-@implementation MainScene
+@implementation MainScene {
+    Grid *_grid;
+    CCLabelTTF *_scoreLabel;
+    CCLabelTTF *_highscoreLabel;
+}
 
 @end
