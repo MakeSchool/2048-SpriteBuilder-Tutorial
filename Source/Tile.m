@@ -9,7 +9,7 @@
 #import "Tile.h"
 
 @implementation Tile {
-    CCLabelTTF *_label;
+    CCLabelTTF *_valueLabel;
     CCNodeColor *_backgroundNode;
 }
 

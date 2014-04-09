@@ -340,7 +340,7 @@
 			</dict>
 		</array>
 		<key>customClass</key>
-		<string></string>
+		<string>Tile</string>
 		<key>displayName</key>
 		<string>CCNode</string>
 		<key>memberVarAssignmentName</key>
