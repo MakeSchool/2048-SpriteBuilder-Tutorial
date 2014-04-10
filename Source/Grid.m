@@ -135,9 +135,37 @@ static const NSInteger START_TILES = 2;
                 newX += direction.x;
                 newY += direction.y;
             }
-            if (newX != currentX || newY !=currentY) {
-                [self moveTile:tile fromIndex:currentX oldY:currentY newX:newX newY:newY];
+
+            BOOL performMove = FALSE;
+            
+            /* If we stopped moving in vector direction, but next index in vector direction is valid, this means the cell is occupied. Let's check if we can merge them*/
+            if ([self indexValid:newX+direction.x y:newY+direction.y]) {
+                // get the other tile
+                NSInteger otherTileX = newX + direction.x;
+                NSInteger otherTileY = newY + direction.y;
+                Tile *otherTile = _gridArray[otherTileX][otherTileY];
+                
+                // compare value of other tile and also check if the other thile has been merged this round
+                if (tile.value == otherTile.value) {
+                    // merge tiles
+                    [self mergeTileAtIndex:currentX y:currentY withTileAtIndex:otherTileX y:otherTileY];
+                } else {
+                    // we cannot merge so we want to perform a move
+                    performMove = TRUE;
+                }
+            } else {
+                // we cannot merge so we want to perform a move
+                performMove = TRUE;
             }
+            
+            if (performMove) {
+                // Move tile to furthest position
+                if (newX != currentX || newY !=currentY) {
+                    // only move tile if position changed
+                    [self moveTile:tile fromIndex:currentX oldY:currentY newX:newX newY:newY];
+                }
+            }
+            
             // move further in this column
             currentY += yChange;
         }
@@ -147,6 +175,28 @@ static const NSInteger START_TILES = 2;
         currentY = initialY;
     }
 }
+
+- (void)mergeTileAtIndex:(NSInteger)x y:(NSInteger)y withTileAtIndex:(NSInteger)xOtherTile y:(NSInteger)yOtherTile {
+    // 1) update the game data
+    Tile *mergedTile = _gridArray[x][y];
+    Tile *otherTile = _gridArray[xOtherTile][yOtherTile];
+    otherTile.value *= 2;
+    
+    _gridArray[x][y] = _noTile;
+    
+    // 2) update the UI
+    CGPoint otherTilePosition = [self positionForColumn:xOtherTile row:yOtherTile];
+    CCActionMoveTo *moveTo = [CCActionMoveTo actionWithDuration:0.2f position:otherTilePosition];
+    CCActionRemove *remove = [CCActionRemove action];
+    
+    CCActionCallBlock *mergeTile = [CCActionCallBlock actionWithBlock:^{
+        [otherTile updateValueDisplay];
+    }];
+    
+    CCActionSequence *sequence = [CCActionSequence actionWithArray:@[moveTo, mergeTile, remove]];
+    [mergedTile runAction:sequence];
+}
+
 
 - (void)moveTile:(Tile *)tile fromIndex:(NSInteger)oldX oldY:(NSInteger)oldY newX:(NSInteger)newX newY:(NSInteger)newY {
     _gridArray[newX][newY] = _gridArray[oldX][oldY];
