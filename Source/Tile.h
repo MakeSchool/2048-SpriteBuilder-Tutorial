@@ -10,4 +10,8 @@
 
 @interface Tile : CCNode
 
+@property (nonatomic, assign) NSInteger value;
+
+- (void)updateValueDisplay;
+
 @end
