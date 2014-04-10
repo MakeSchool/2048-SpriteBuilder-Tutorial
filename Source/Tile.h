@@ -11,6 +11,7 @@
 @interface Tile : CCNode
 
 @property (nonatomic, assign) NSInteger value;
+@property (nonatomic, assign) BOOL mergedThisRound;
 
 - (void)updateValueDisplay;
 

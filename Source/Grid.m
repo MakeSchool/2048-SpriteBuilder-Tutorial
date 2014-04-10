@@ -58,6 +58,23 @@ static const NSInteger START_TILES = 2;
     [[[CCDirector sharedDirector] view] addGestureRecognizer:swipeDown];
 }
 
+
+#pragma mark - Next Round
+
+- (void)nextRound {
+    [self spawnRandomTile];
+    
+    for (int i = 0; i < GRID_SIZE; i++) {
+        for (int j = 0; j < GRID_SIZE; j++) {
+            Tile *tile = _gridArray[i][j];
+            if (![tile isEqual:_noTile]) {
+                // reset merged flag
+                tile.mergedThisRound = FALSE;
+            }
+        }
+    }
+}
+
 #pragma mark - Touch Handling
 
 - (void)swipeLeft {
@@ -148,7 +165,7 @@ static const NSInteger START_TILES = 2;
                 Tile *otherTile = _gridArray[otherTileX][otherTileY];
                 
                 // compare value of other tile and also check if the other thile has been merged this round
-                if (tile.value == otherTile.value) {
+                if (tile.value == otherTile.value && !otherTile.mergedThisRound) {
                     // merge tiles
                     [self mergeTileAtIndex:currentX y:currentY withTileAtIndex:otherTileX y:otherTileY];
                     movedTilesThisRound = TRUE;
@@ -180,19 +197,20 @@ static const NSInteger START_TILES = 2;
     }
     
     if (movedTilesThisRound) {
-        [self spawnRandomTile];
+        [self nextRound];
     }
 }
 
+
 - (void)mergeTileAtIndex:(NSInteger)x y:(NSInteger)y withTileAtIndex:(NSInteger)xOtherTile y:(NSInteger)yOtherTile {
-    // 1) update the game data
     Tile *mergedTile = _gridArray[x][y];
     Tile *otherTile = _gridArray[xOtherTile][yOtherTile];
     otherTile.value *= 2;
     
+    otherTile.mergedThisRound = TRUE;
+    
     _gridArray[x][y] = _noTile;
     
-    // 2) update the UI
     CGPoint otherTilePosition = [self positionForColumn:xOtherTile row:yOtherTile];
     CCActionMoveTo *moveTo = [CCActionMoveTo actionWithDuration:0.2f position:otherTilePosition];
     CCActionRemove *remove = [CCActionRemove action];
