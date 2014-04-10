@@ -131,7 +131,7 @@ static const NSInteger START_TILES = 2;
             NSInteger newY = currentY;
             
             /* find the farthest position by iterating in direction of the vector until we reach border of grid or an occupied cell*/
-            while ([self indexValid:newX+direction.x y:newY+direction.y]) {
+            while ([self indexValidAndUnoccupied:newX+direction.x y:newY+direction.y]) {
                 newX += direction.x;
                 newY += direction.y;
             }
@@ -171,6 +171,18 @@ static const NSInteger START_TILES = 2;
         }
     }
     return indexValid;
+}
+
+- (BOOL)indexValidAndUnoccupied:(NSInteger)x y:(NSInteger)y {
+    BOOL indexValid = [self indexValid:x y:y];
+    
+    if (!indexValid) {
+        return FALSE;
+    }
+    
+    BOOL unoccupied = [_gridArray[x][y] isEqual:_noTile];
+    
+    return unoccupied;
 }
 
 - (void)setupBackground
