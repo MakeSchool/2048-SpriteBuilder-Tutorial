@@ -85,6 +85,8 @@ static const NSInteger START_TILES = 2;
     NSInteger currentX = 0;
     NSInteger currentY = 0;
     
+    BOOL movedTilesThisRound = FALSE;
+    
     //1) Move to relevant edge by applying direction until reaching border
     while ([self indexValid:currentX y:currentY]) {
         CGFloat newX = currentX + direction.x;
@@ -135,7 +137,7 @@ static const NSInteger START_TILES = 2;
                 newX += direction.x;
                 newY += direction.y;
             }
-
+            
             BOOL performMove = FALSE;
             
             /* If we stopped moving in vector direction, but next index in vector direction is valid, this means the cell is occupied. Let's check if we can merge them*/
@@ -149,6 +151,7 @@ static const NSInteger START_TILES = 2;
                 if (tile.value == otherTile.value) {
                     // merge tiles
                     [self mergeTileAtIndex:currentX y:currentY withTileAtIndex:otherTileX y:otherTileY];
+                    movedTilesThisRound = TRUE;
                 } else {
                     // we cannot merge so we want to perform a move
                     performMove = TRUE;
@@ -163,6 +166,7 @@ static const NSInteger START_TILES = 2;
                 if (newX != currentX || newY !=currentY) {
                     // only move tile if position changed
                     [self moveTile:tile fromIndex:currentX oldY:currentY newX:newX newY:newY];
+                    movedTilesThisRound = TRUE;
                 }
             }
             
@@ -173,6 +177,10 @@ static const NSInteger START_TILES = 2;
         // move to the next column, start at the inital row
         currentX += xChange;
         currentY = initialY;
+    }
+    
+    if (movedTilesThisRound) {
+        [self spawnRandomTile];
     }
 }
 
