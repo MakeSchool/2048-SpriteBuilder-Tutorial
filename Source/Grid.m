@@ -205,6 +205,7 @@ static const NSInteger START_TILES = 2;
 - (void)mergeTileAtIndex:(NSInteger)x y:(NSInteger)y withTileAtIndex:(NSInteger)xOtherTile y:(NSInteger)yOtherTile {
     Tile *mergedTile = _gridArray[x][y];
     Tile *otherTile = _gridArray[xOtherTile][yOtherTile];
+    self.score += mergedTile.value + otherTile.value;
     otherTile.value *= 2;
     
     otherTile.mergedThisRound = TRUE;
