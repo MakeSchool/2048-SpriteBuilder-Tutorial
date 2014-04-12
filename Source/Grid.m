@@ -20,6 +20,7 @@
 
 static const NSInteger GRID_SIZE = 4;
 static const NSInteger START_TILES = 2;
+static const NSInteger WIN_TILE = 8;
 
 #pragma mark - View
 
@@ -61,6 +62,39 @@ static const NSInteger START_TILES = 2;
 
 #pragma mark - Next Round
 
+- (BOOL)movePossible {
+    for (int i = 0; i < GRID_SIZE; i++) {
+        for (int j = 0; j < GRID_SIZE; j++) {
+            Tile *tile = _gridArray[i][j];
+            
+            // no tile at this position
+            if ([tile isEqual:_noTile]) {
+                // move possible, we have a free field
+                return TRUE;
+            } else {
+                // there is a tile at this position. Check if this tile could move
+                Tile *topNeighbour = [self tileForIndex:i y:j+1];
+                Tile *bottomNeighbour = [self tileForIndex:i y:j-1];
+                Tile *leftNeighbour = [self tileForIndex:i-1 y:j];
+                Tile *rightNeighbour = [self tileForIndex:i+1 y:j];
+                
+                NSArray *neighours = @[topNeighbour, bottomNeighbour, leftNeighbour, rightNeighbour];
+                
+                for (id neighbourTile in neighours) {
+                    if (neighbourTile != _noTile) {
+                        Tile *neighbour = (Tile *)neighbourTile;
+                        if (neighbour.value == tile.value) {
+                            return TRUE;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return FALSE;
+}
+
 - (void)nextRound {
     [self spawnRandomTile];
     
@@ -73,6 +107,26 @@ static const NSInteger START_TILES = 2;
             }
         }
     }
+    
+    BOOL movePossible = [self movePossible];
+    
+    if (!movePossible) {
+        [self loose];
+    }
+}
+
+#pragma mark - End Conditions
+
+- (void)endGameWithMessage:(NSString*)message {
+    CCLOG(@"%@",message);
+}
+
+- (void)win {
+    [self endGameWithMessage:@"You win!"];
+}
+
+- (void)loose {
+    [self endGameWithMessage:@"You loose!"];
 }
 
 #pragma mark - Touch Handling
@@ -210,6 +264,10 @@ static const NSInteger START_TILES = 2;
     
     otherTile.mergedThisRound = TRUE;
     
+    if (otherTile.value == WIN_TILE) {
+        [self win];
+    }
+    
     _gridArray[x][y] = _noTile;
     
     CGPoint otherTilePosition = [self positionForColumn:xOtherTile row:yOtherTile];
@@ -296,6 +354,14 @@ static const NSInteger START_TILES = 2;
 }
 
 #pragma mark - Tile Utils
+
+- (id)tileForIndex:(NSInteger)x y:(NSInteger)y {
+    if (![self indexValid:x y:y]) {
+        return _noTile;
+    } else {
+        return _gridArray[x][y];
+    }
+}
 
 - (void)spawnStartTiles {
     for (int i = 0; i < START_TILES; i++) {
