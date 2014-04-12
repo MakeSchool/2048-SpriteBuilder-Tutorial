@@ -8,6 +8,7 @@
 
 #import "Grid.h"
 #import "Tile.h"
+#import "GameEnd.h"
 
 @implementation Grid {
     CGFloat _columnWidth;
@@ -20,7 +21,7 @@
 
 static const NSInteger GRID_SIZE = 4;
 static const NSInteger START_TILES = 2;
-static const NSInteger WIN_TILE = 8;
+static const NSInteger WIN_TILE = 2048;
 
 #pragma mark - View
 
@@ -118,7 +119,22 @@ static const NSInteger WIN_TILE = 8;
 #pragma mark - End Conditions
 
 - (void)endGameWithMessage:(NSString*)message {
-    CCLOG(@"%@",message);
+    GameEnd *gameEndPopover = (GameEnd *)[CCBReader load:@"GameEnd"];
+    gameEndPopover.positionType = CCPositionTypeNormalized;
+    gameEndPopover.position = ccp(0.5, 0.5);
+    gameEndPopover.zOrder = INT_MAX;
+    
+    [gameEndPopover setMessage:message score:self.score];
+    
+    [self addChild:gameEndPopover];
+    
+    NSNumber *highScore = [[NSUserDefaults standardUserDefaults] objectForKey:@"highscore"];
+    if (self.score > [highScore intValue]) {
+        // new highscore!
+        highScore = [NSNumber numberWithInt:self.score];
+        [[NSUserDefaults standardUserDefaults] setObject:highScore forKey:@"highscore"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
 - (void)win {
