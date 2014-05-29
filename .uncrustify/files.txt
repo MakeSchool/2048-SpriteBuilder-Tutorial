@@ -1,0 +1,13 @@
+./.uncrustify/test-expected.m
+./.uncrustify/test-input.m
+./2048Tutorial.spritebuilder/Source/AppDelegate.h
+./2048Tutorial.spritebuilder/Source/AppDelegate.m
+./2048Tutorial.spritebuilder/Source/GameEnd.h
+./2048Tutorial.spritebuilder/Source/GameEnd.m
+./2048Tutorial.spritebuilder/Source/Grid.h
+./2048Tutorial.spritebuilder/Source/Grid.m
+./2048Tutorial.spritebuilder/Source/main.m
+./2048Tutorial.spritebuilder/Source/MainScene.h
+./2048Tutorial.spritebuilder/Source/MainScene.m
+./2048Tutorial.spritebuilder/Source/Tile.h
+./2048Tutorial.spritebuilder/Source/Tile.m
