@@ -29,6 +29,7 @@
 #import <objc/runtime.h>
 
 #define kCCTestMenuItemHeight 44
+static CGPoint scrollPosition;
 
 @implementation MainMenu
 
@@ -70,27 +71,22 @@
     self = [super init];
     if (!self) return NULL;
     
-    // Load resources
-    [[CCSpriteFrameCache sharedSpriteFrameCache] registerSpriteFramesFile:@"Interface.plist"];
-    [[CCSpriteFrameCache sharedSpriteFrameCache] registerSpriteFramesFile:@"Sprites.plist"];
-    [[CCSpriteFrameCache sharedSpriteFrameCache] registerSpriteFramesFile:@"TilesAtlassed.plist"];
-    
     // Make the node the same size as the parent container (i.e. the screen)
     self.contentSizeType = CCSizeTypeNormalized;
     self.contentSize = CGSizeMake(1, 1);
     
     // Header background
     CCSprite9Slice* headerBg = [CCSprite9Slice spriteWithImageNamed:@"Interface/header.png"];
-    headerBg.positionType = CCPositionTypeMake(CCPositionUnitPoints, CCPositionUnitPoints, CCPositionReferenceCornerTopLeft);
+    headerBg.positionType = CCPositionTypeMake(CCPositionUnitUIPoints, CCPositionUnitUIPoints, CCPositionReferenceCornerTopLeft);
     headerBg.position = ccp(0,0);
     headerBg.anchorPoint = ccp(0,1);
-    headerBg.contentSizeType = CCSizeTypeMake(CCSizeUnitNormalized, CCSizeUnitPoints);
+    headerBg.contentSizeType = CCSizeTypeMake(CCSizeUnitNormalized, CCSizeUnitUIPoints);
     headerBg.contentSize = CGSizeMake(1, kCCUITestHeaderHeight);
     
     [self addChild:headerBg];
     
     // Header label
-    CCLabelTTF* lblTitle = [CCLabelTTF labelWithString:@"Cocos2d Tests" fontName:@"HelveticaNeue-Medium" fontSize:17];
+    CCLabelTTF* lblTitle = [CCLabelTTF labelWithString:@"Cocos2d Tests" fontName:@"HelveticaNeue-Medium" fontSize:17 * [CCDirector sharedDirector].UIScaleFactor];
     lblTitle.positionType = CCPositionTypeNormalized;
     lblTitle.position = ccp(0.5, 0.5);
     
@@ -98,10 +94,12 @@
     
     // Table view
     CCTableView* tableView = [[CCTableView alloc] init];
-    tableView.contentSizeType = CCSizeTypeMake(CCSizeUnitNormalized, CCSizeUnitInsetPoints);
+    tableView.contentSizeType = CCSizeTypeMake(CCSizeUnitNormalized, CCSizeUnitInsetUIPoints);
     tableView.contentSize = CGSizeMake(1, kCCUITestHeaderHeight);
     tableView.rowHeight = kCCTestMenuItemHeight;
+    tableView.rowHeightUnit = CCSizeUnitUIPoints;
     tableView.dataSource = self;
+	tableView.scrollPosition = scrollPosition;
     
     [self addChild:tableView z:-1];
     
@@ -113,6 +111,7 @@
 - (void) selectedRow:(id)sender
 {
     CCTableView* tableView = sender;
+	scrollPosition = tableView.scrollPosition;
     
     NSString* className = [[self testClassNames] objectAtIndex:tableView.selectedRow];
     
@@ -125,7 +124,7 @@
 - (CCTableViewCell*) tableView:(CCTableView*)tableView nodeForRowAtIndex:(NSUInteger) index
 {
     CCTableViewCell* cell = [[CCTableViewCell alloc] init];
-    cell.contentSizeType = CCSizeTypeMake(CCSizeUnitNormalized, CCSizeUnitPoints);
+    cell.contentSizeType = CCSizeTypeMake(CCSizeUnitNormalized, CCSizeUnitUIPoints);
     cell.contentSize = CGSizeMake(1, kCCTestMenuItemHeight);
     
     CCSpriteFrame* frameNormal = [CCSpriteFrame frameWithImageNamed:@"Interface/table-bg-normal.png"];
@@ -134,8 +133,8 @@
     [cell.button setBackgroundSpriteFrame:frameNormal forState:CCControlStateNormal];
     [cell.button setBackgroundSpriteFrame:frameHilite forState:CCControlStateHighlighted];
     
-    CCLabelTTF* label = [CCLabelTTF labelWithString:[[self testClassNames] objectAtIndex:index] fontName:@"HelveticaNeue" fontSize:17];
-    label.positionType = CCPositionTypeMake(CCPositionUnitPoints, CCPositionUnitNormalized, CCPositionReferenceCornerBottomLeft);
+    CCLabelTTF* label = [CCLabelTTF labelWithString:[[self testClassNames] objectAtIndex:index] fontName:@"HelveticaNeue" fontSize:17 * [CCDirector sharedDirector].UIScaleFactor];
+    label.positionType = CCPositionTypeMake(CCPositionUnitUIPoints, CCPositionUnitNormalized, CCPositionReferenceCornerBottomLeft);
     label.position = ccp(20, 0.5f);
     label.anchorPoint = ccp(0, 0.5f);
     

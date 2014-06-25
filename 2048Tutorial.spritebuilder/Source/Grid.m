@@ -337,6 +337,9 @@ static const NSInteger WIN_TILE = 2048;
   CCNode *tile = [CCBReader load:@"Tile"];
   _columnWidth = tile.contentSize.width;
   _columnHeight = tile.contentSize.height;
+  
+  // this hotfix is needed because of issue #638 in Cocos2D 3.1 / SB 1.1 (https://github.com/spritebuilder/SpriteBuilder/issues/638)
+  [tile performSelector:@selector(cleanup)];
 
   // calculate the margin by subtracting the tile sizes from the grid size
   _tileMarginHorizontal = (self.contentSize.width - (GRID_SIZE * _columnWidth)) / (GRID_SIZE+1);
