@@ -343,8 +343,8 @@ static const NSInteger WIN_TILE = 2048;
 
   // calculate the margin by subtracting the tile sizes from the grid size
   _tileMarginHorizontal = (self.contentSize.width - (GRID_SIZE * _columnWidth)) / (GRID_SIZE+1);
-  _tileMarginVertical = (self.contentSize.height - (GRID_SIZE * _columnWidth)) / (GRID_SIZE+1);
-
+  _tileMarginVertical = (self.contentSize.height - (GRID_SIZE * _columnHeight)) / (GRID_SIZE+1);
+  
   // set up initial x and y positions
   float x = _tileMarginHorizontal;
   float y = _tileMarginVertical;
