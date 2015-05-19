@@ -1,0 +1,4 @@
+language: objective-c
+
+script:
+  - xctool -project 2048Tutorial.spritebuilder/2048Tutorial.xcodeproj -scheme 2048Tutorial -sdk iphonesimulator build test CODE_SIGNING_REQUIRED=NO
